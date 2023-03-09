@@ -7,11 +7,23 @@ class CustomAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: RichText(
+        textAlign: TextAlign.center,
         text: TextSpan(
           children: [
             TextSpan(
-              text: "Kool Screen Wall"
-            )
+              text: "Kool",
+              style: TextStyle(color: Colors.black,
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
+              ),
+            ),
+            TextSpan(
+              text: "Screen",
+              style: TextStyle(color: Colors.orangeAccent,
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
+              ),
+            ),
           ]
         ),
       ),
