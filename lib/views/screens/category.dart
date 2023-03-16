@@ -19,20 +19,7 @@ class HomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: SearchBar()),
       
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 20),
-                child: SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 30,itemBuilder: ((context, index) => CategoryBlock())),
-                ),
-              ),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 10),
                 height: MediaQuery.of(context).size.height, 

@@ -4,8 +4,8 @@ import 'package:kool_screen_wall/views/widgets/search_bar.dart';
 
 import '../widgets/category_block.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,16 +23,6 @@ class HomeScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 10),
               child: SearchBar()),
       
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 20),
-                child: SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 30,itemBuilder: ((context, index) => CategoryBlock())),
-                ),
-              ),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 10),
                 height: MediaQuery.of(context).size.height, 
