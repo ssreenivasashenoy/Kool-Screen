@@ -4,8 +4,8 @@ import 'package:kool_screen_wall/views/widgets/search_bar.dart';
 
 import '../widgets/category_block.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class CategoryScreen extends StatelessWidget {
+  const CategoryScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +19,23 @@ class HomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Stack(
+              children: [
+                Image.network(
+                  height: 150,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                  "https://images.pexels.com/photos/9754/mountains-clouds-forest-fog.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"),
+
+                  Container(
+                    height: 150,
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.black38,
+                  )
+              ],
+            ),
       
+      SizedBox(height: 20,),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 10),
                 height: MediaQuery.of(context).size.height, 
