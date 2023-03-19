@@ -31,6 +31,17 @@ class CategoryScreen extends StatelessWidget {
                     height: 150,
                   width: MediaQuery.of(context).size.width,
                   color: Colors.black38,
+                  ),
+
+                  Positioned(
+                    left: 120,
+                    top: 40,
+                    child: Column(
+                      children: [
+                        Text("Category",style:TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w300)),
+                        Text("Mountains",style:TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.w600),)
+                      ],
+                    ),
                   )
               ],
             ),
