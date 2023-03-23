@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kool_screen_wall/controller/api_operation.dart';
+import 'package:kool_screen_wall/model/photos_model.dart';
+import 'package:kool_screen_wall/views/screens/fullscreen.dart';
 import 'package:kool_screen_wall/views/widgets/custom_app_bar.dart';
 import 'package:kool_screen_wall/views/widgets/search_bar.dart';
 
@@ -13,10 +15,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<PhotosModel> trendingWallList = [];
+
+  GetTrendingWallpapers() async {
+    trendingWallList = await ApiOperations.getTrendingWallpapers();
+
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
-    ApiOperations.getTrendingWallpapers();
+    GetTrendingWallpapers();
   }
 
   @override
@@ -48,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 10),
-              height: MediaQuery.of(context).size.height,
+              height: 700,
               child: GridView.builder(
                   physics: BouncingScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -57,20 +67,32 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisSpacing: 13,
                     mainAxisSpacing: 10,
                   ),
-                  itemCount: 16,
-                  itemBuilder: ((context, index) => Container(
-                        height: 800,
-                        width: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.amberAccent,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                              height: 800,
-                              width: 50,
-                              fit: BoxFit.cover,
-                              "https://images.pexels.com/photos/13415959/pexels-photo-13415959.jpeg"),
+                  itemCount: trendingWallList.length,
+                  itemBuilder: ((context, index) => InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => FullScreen(
+                                      imgUrl: trendingWallList[index].imgSrc)));
+                        },
+                        child: Hero(
+                          tag: trendingWallList[index].imgSrc,
+                          child: Container(
+                            height: 800,
+                            width: 50,
+                            decoration: BoxDecoration(
+                                color: Colors.amberAccent,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.network(
+                                  height: 800,
+                                  width: 50,
+                                  fit: BoxFit.cover,
+                                  trendingWallList[index].imgSrc),
+                            ),
+                          ),
                         ),
                       ))),
             )
