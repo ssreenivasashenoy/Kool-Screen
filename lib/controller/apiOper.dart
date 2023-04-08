@@ -62,6 +62,10 @@ class ApiOperations {
       "Sunset",
       "Tower",
       "Mountains",
+      "Computer",
+      "Trains",
+      "India",
+      "America",
     ];
     cateogryModelList.clear();
     cateogryName.forEach((catName) async {
