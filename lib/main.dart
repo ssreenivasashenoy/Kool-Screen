@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kool_screen_wall/views/screens/category.dart';
-import 'package:kool_screen_wall/views/screens/home.dart';
+import 'package:kool_screen/views/screens/category.dart';
+import 'package:kool_screen/views/screens/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +11,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kool Screen Wall',
+      title: 'Kool Screen',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

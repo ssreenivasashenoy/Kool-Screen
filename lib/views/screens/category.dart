@@ -1,11 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:kool_screen_wall/views/widgets/custom_app_bar.dart';
-import 'package:kool_screen_wall/views/widgets/search_bar.dart';
+import 'package:kool_screen/controller/apiOper.dart';
+import 'package:kool_screen/model/photosModel.dart';
+import 'package:kool_screen/views/screens/FullScreen.dart';
+import 'package:kool_screen/views/widgets/CustomAppBar.dart';
+import 'package:kool_screen/views/widgets/SearchBar.dart';
+import 'package:kool_screen/views/widgets/catBlock.dart';
 
-import '../widgets/category_block.dart';
+class CategoryScreen extends StatefulWidget {
+  String catName;
+  String catImgUrl;
 
-class CategoryScreen extends StatelessWidget {
-  const CategoryScreen({super.key});
+  CategoryScreen({super.key, required this.catImgUrl, required this.catName});
+
+  @override
+  State<CategoryScreen> createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends State<CategoryScreen> {
+  late List<PhotosModel> categoryResults;
+  bool isLoading = true;
+  GetCatRelWall() async {
+    categoryResults = await ApiOperations.searchWallpapers(widget.catName);
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    GetCatRelWall();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,70 +41,101 @@ class CategoryScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0.0,
         backgroundColor: Colors.white,
-        title: CustomAppBar(title1: 'Kool',title2: ' Screen'),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                Image.network(
-                  height: 150,
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.cover,
-                  "https://images.pexels.com/photos/9754/mountains-clouds-forest-fog.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"),
-
-                  Container(
-                    height: 150,
-                  width: MediaQuery.of(context).size.width,
-                  color: Colors.black38,
-                  ),
-
-                  Positioned(
-                    left: 120,
-                    top: 40,
-                    child: Column(
-                      children: [
-                        Text("Category",style:TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w300)),
-                        Text("Mountains",style:TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.w600),)
-                      ],
-                    ),
-                  )
-              ],
-            ),
-      
-      SizedBox(height: 20,),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10),
-                height: MediaQuery.of(context).size.height, 
-                child: GridView.builder(
-                  physics: BouncingScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  mainAxisExtent: 400,
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 13,
-                  mainAxisSpacing: 10,
-                ), 
-                  itemCount: 16,
-                  itemBuilder: ((context,index)=> Container(
-                  height: 800,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.amberAccent,borderRadius: BorderRadius.circular(20)),
-
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      height: 800,
-                      width: 50,
-                      fit: BoxFit.cover,
-                      "https://images.pexels.com/photos/13415959/pexels-photo-13415959.jpeg"),
-                  ),
-                ))),
-              )
-        ],
+        title: CustomAppBar(
+          word1: "Kool",
+          word2: "Screen",
         ),
       ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      Image.network(
+                          height: 150,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.cover,
+                          widget.catImgUrl),
+                      Container(
+                        height: 150,
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.black38,
+                      ),
+                      Positioned(
+                        left: 120,
+                        top: 40,
+                        child: Column(
+                          children: [
+                            Text("Category",
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w300)),
+                            Text(
+                              widget.catName,
+                              style: TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    height: 700,
+                    child: GridView.builder(
+                        physics: BouncingScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            mainAxisExtent: 400,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 13,
+                            mainAxisSpacing: 10),
+                        itemCount: categoryResults.length,
+                        itemBuilder: ((context, index) => GridTile(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => FullScreen(
+                                              imgUrl: categoryResults[index]
+                                                  .imgSrc)));
+                                },
+                                child: Hero(
+                                  tag: categoryResults[index].imgSrc,
+                                  child: Container(
+                                    height: 800,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.network(
+                                          height: 800,
+                                          width: 50,
+                                          fit: BoxFit.cover,
+                                          categoryResults[index].imgSrc),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ))),
+                  )
+                ],
+              ),
+            ),
     );
   }
 }

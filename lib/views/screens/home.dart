@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:kool_screen_wall/controller/api_operation.dart';
-import 'package:kool_screen_wall/model/photos_model.dart';
-import 'package:kool_screen_wall/views/screens/fullscreen.dart';
-import 'package:kool_screen_wall/views/widgets/custom_app_bar.dart';
-import 'package:kool_screen_wall/views/widgets/search_bar.dart';
-
-import '../widgets/category_block.dart';
+import 'package:kool_screen/controller/apiOper.dart';
+import 'package:kool_screen/model/categoryModel.dart';
+import 'package:kool_screen/model/photosModel.dart';
+import 'package:kool_screen/views/screens/FullScreen.dart';
+import 'package:kool_screen/views/widgets/CustomAppBar.dart';
+import 'package:kool_screen/views/widgets/SearchBar.dart';
+import 'package:kool_screen/views/widgets/catBlock.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,17 +15,31 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<PhotosModel> trendingWallList = [];
+  late List<PhotosModel> trendingWallList;
+  late List<CategoryModel> CatModList;
+  bool isLoading = true;
+
+  GetCatDetails() async {
+    CatModList = await ApiOperations.getCategoriesList();
+    print("GETTTING CAT MOD LIST");
+    print(CatModList);
+    setState(() {
+      CatModList = CatModList;
+    });
+  }
 
   GetTrendingWallpapers() async {
     trendingWallList = await ApiOperations.getTrendingWallpapers();
 
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
   void initState() {
     super.initState();
+    GetCatDetails();
     GetTrendingWallpapers();
   }
 
@@ -37,68 +51,90 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         elevation: 0.0,
         backgroundColor: Colors.white,
-        title: CustomAppBar(title1: 'Kool', title2: ' Screen'),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: SearchBar()),
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 20),
-              child: SizedBox(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 30,
-                    itemBuilder: ((context, index) => CategoryBlock())),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
-              height: 700,
-              child: GridView.builder(
-                  physics: BouncingScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisExtent: 400,
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 13,
-                    mainAxisSpacing: 10,
-                  ),
-                  itemCount: trendingWallList.length,
-                  itemBuilder: ((context, index) => InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => FullScreen(
-                                      imgUrl: trendingWallList[index].imgSrc)));
-                        },
-                        child: Hero(
-                          tag: trendingWallList[index].imgSrc,
-                          child: Container(
-                            height: 800,
-                            width: 50,
-                            decoration: BoxDecoration(
-                                color: Colors.amberAccent,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.network(
-                                  height: 800,
-                                  width: 50,
-                                  fit: BoxFit.cover,
-                                  trendingWallList[index].imgSrc),
-                            ),
-                          ),
-                        ),
-                      ))),
-            )
-          ],
+        title: CustomAppBar(
+          word1: "Kool",
+          word2: "Screen",
         ),
       ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: SearchBar()),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 20),
+                    child: SizedBox(
+                      height: 50,
+                      width: MediaQuery.of(context).size.width,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: CatModList.length,
+                          itemBuilder: ((context, index) => CatBlock(
+                                categoryImgSrc: CatModList[index].catImgUrl,
+                                categoryName: CatModList[index].catName,
+                              ))),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    height: 700,
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomeScreen()));
+                      },
+                      child: GridView.builder(
+                          physics: BouncingScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  mainAxisExtent: 400,
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 13,
+                                  mainAxisSpacing: 10),
+                          itemCount: trendingWallList.length,
+                          itemBuilder: ((context, index) => GridTile(
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => FullScreen(
+                                                imgUrl: trendingWallList[index]
+                                                    .imgSrc)));
+                                  },
+                                  child: Hero(
+                                    tag: trendingWallList[index].imgSrc,
+                                    child: Container(
+                                      height: 800,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Image.network(
+                                            height: 800,
+                                            width: 50,
+                                            fit: BoxFit.cover,
+                                            trendingWallList[index].imgSrc),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ))),
+                    ),
+                  )
+                ],
+              ),
+            ),
     );
   }
 }

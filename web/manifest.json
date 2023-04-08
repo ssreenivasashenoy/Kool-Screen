@@ -1,6 +1,6 @@
 {
-    "name": "kool_screen_wall",
-    "short_name": "kool_screen_wall",
+    "name": "kool_screen",
+    "short_name": "kool_screen",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kool_screen_wall/controller/api_operation.dart';
-import 'package:kool_screen_wall/model/photos_model.dart';
-import 'package:kool_screen_wall/views/widgets/custom_app_bar.dart';
-import 'package:kool_screen_wall/views/widgets/search_bar.dart';
-
-import '../widgets/category_block.dart';
+import 'package:kool_screen/controller/apiOper.dart';
+import 'package:kool_screen/model/photosModel.dart';
+import 'package:kool_screen/views/screens/FullScreen.dart';
+import 'package:kool_screen/views/widgets/CustomAppBar.dart';
+import 'package:kool_screen/views/widgets/SearchBar.dart';
+import 'package:kool_screen/views/widgets/catBlock.dart';
 
 class SearchScreen extends StatefulWidget {
   String query;
@@ -15,15 +15,19 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  List<PhotosModel> searchResults=[];
-
+  late List<PhotosModel> searchResults;
+  bool isLoading = true;
   GetSearchResults() async {
     searchResults = await ApiOperations.searchWallpapers(widget.query);
-    setState(() {});
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
     GetSearchResults();
   }
@@ -36,46 +40,70 @@ class _SearchScreenState extends State<SearchScreen> {
         centerTitle: true,
         elevation: 0.0,
         backgroundColor: Colors.white,
-        title: CustomAppBar(title1: 'Kool', title2: ' Screen'),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: SearchBar()),
-                SizedBox(height: 10,),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
-              height: MediaQuery.of(context).size.height,
-              child: GridView.builder(
-                  physics: BouncingScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisExtent: 400,
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 13,
-                    mainAxisSpacing: 10,
-                  ),
-                  itemCount: searchResults.length,
-                  itemBuilder: ((context, index) => Container(
-                        height: 800,
-                        width: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.amberAccent,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                              height: 800,
-                              width: 50,
-                              fit: BoxFit.cover,
-                              searchResults[index].imgSrc),
-                        ),
-                      ))),
-            )
-          ],
+        title: CustomAppBar(
+          word1: "Kool",
+          word2: "Screen",
         ),
       ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: SearchBar()),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    height: MediaQuery.of(context).size.height,
+                    child: GridView.builder(
+                        physics: BouncingScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            mainAxisExtent: 400,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 13,
+                            mainAxisSpacing: 10),
+                        itemCount: searchResults.length,
+                        itemBuilder: ((context, index) => GridTile(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => FullScreen(
+                                              imgUrl: searchResults[index]
+                                                  .imgSrc)));
+                                },
+                                child: Hero(
+                                  tag: searchResults[index].imgSrc,
+                                  child: Container(
+                                    height: 800,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.network(
+                                          height: 800,
+                                          width: 50,
+                                          fit: BoxFit.cover,
+                                          searchResults[index].imgSrc),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ))),
+                  )
+                ],
+              ),
+            ),
     );
   }
 }

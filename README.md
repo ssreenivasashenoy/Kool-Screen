@@ -1,4 +1,4 @@
-# kool_screen_wall
+# kool_screen
 
 A new Flutter project.
 
