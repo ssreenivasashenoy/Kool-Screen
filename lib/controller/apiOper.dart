@@ -7,15 +7,19 @@ import 'package:kool_screen/model/photosModel.dart';
 import 'dart:math';
 
 class ApiOperations {
+  // List to store trending wallpapers
   static List<PhotosModel> trendingWallpapers = [];
+  // List to store search wallpapers
   static List<PhotosModel> searchWallpapersList = [];
-  static List<CategoryModel> cateogryModelList = [];
+  // List to store category models
+  static List<CategoryModel> categoryModelList = [];
 
-  static String _apiKey =
-      "To2ZpCcftuLlLkq4rTYguB7AgBLKBexfltJMe05ew8dBXzlk9SwvxPms";
+  // Pexels API key
+  static String _apiKey = "To2ZpCcftuLlLkq4rTYguB7AgBLKBexfltJMe05ew8dBXzlk9SwvxPms";
+
+  // Method to get trending wallpapers
   static Future<List<PhotosModel>> getTrendingWallpapers() async {
-    await http.get(Uri.parse("https://api.pexels.com/v1/curated"),
-        headers: {"Authorization": "$_apiKey"}).then((value) {
+    await http.get(Uri.parse("https://api.pexels.com/v1/curated"), headers: {"Authorization": "$_apiKey"}).then((value) {
       print("RESPONSE REPORT");
       print(value.body);
       Map<String, dynamic> jsonData = jsonDecode(value.body);
@@ -28,11 +32,9 @@ class ApiOperations {
     return trendingWallpapers;
   }
 
+  // Method to search wallpapers based on a query
   static Future<List<PhotosModel>> searchWallpapers(String query) async {
-    await http.get(
-        Uri.parse(
-            "https://api.pexels.com/v1/search?query=$query&per_page=30&page=1"),
-        headers: {"Authorization": "$_apiKey"}).then((value) {
+    await http.get(Uri.parse("https://api.pexels.com/v1/search?query=$query&per_page=30&page=1"), headers: {"Authorization": "$_apiKey"}).then((value) {
       Map<String, dynamic> jsonData = jsonDecode(value.body);
       List photos = jsonData['photos'];
       searchWallpapersList.clear();
@@ -44,8 +46,9 @@ class ApiOperations {
     return searchWallpapersList;
   }
 
+  // Method to get a list of categories
   static List<CategoryModel> getCategoriesList() {
-    List cateogryName = [
+    List categoryName = [
       "Cars",
       "Nature",
       "Bikes",
@@ -67,18 +70,17 @@ class ApiOperations {
       "India",
       "America",
     ];
-    cateogryModelList.clear();
-    cateogryName.forEach((catName) async {
+    categoryModelList.clear();
+    categoryName.forEach((catName) async {
       final _random = new Random();
 
-      PhotosModel photoModel =
-          (await searchWallpapers(catName))[0 + _random.nextInt(11 - 0)];
+      // Get a random photo for each category
+      PhotosModel photoModel = (await searchWallpapers(catName))[0 + _random.nextInt(11 - 0)];
       print("IMG SRC IS HERE");
       print(photoModel.imgSrc);
-      cateogryModelList
-          .add(CategoryModel(catImgUrl: photoModel.imgSrc, catName: catName));
+      categoryModelList.add(CategoryModel(catImgUrl: photoModel.imgSrc, catName: catName));
     });
 
-    return cateogryModelList;
+    return categoryModelList;
   }
 }

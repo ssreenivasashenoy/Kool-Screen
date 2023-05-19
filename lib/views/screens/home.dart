@@ -15,32 +15,31 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late List<PhotosModel> trendingWallList;
-  late List<CategoryModel> CatModList;
-  bool isLoading = true;
+  late List<PhotosModel> trendingWallList;  // List to store the trending wallpapers.
+  late List<CategoryModel> CatModList;  // List to store the category models.
+  bool isLoading = true;  // Variable to track whether the data is being loaded or not.
 
   GetCatDetails() async {
-    CatModList = await ApiOperations.getCategoriesList();
-    print("GETTTING CAT MOD LIST");
-    print(CatModList);
+    CatModList = await ApiOperations.getCategoriesList();  // Calling the API operation to retrieve the category models.
+
     setState(() {
-      CatModList = CatModList;
+      CatModList = CatModList;  // Updating the CatModList variable with the retrieved category models.
     });
   }
 
   GetTrendingWallpapers() async {
-    trendingWallList = await ApiOperations.getTrendingWallpapers();
+    trendingWallList = await ApiOperations.getTrendingWallpapers();  // Calling the API operation to retrieve the trending wallpapers.
 
     setState(() {
-      isLoading = false;
+      isLoading = false;  // Updating the isLoading variable to indicate that the data has been loaded.
     });
   }
 
   @override
   void initState() {
     super.initState();
-    GetCatDetails();
-    GetTrendingWallpapers();
+    GetCatDetails();  // Calling the function to retrieve the category models when the screen is initialized.
+    GetTrendingWallpapers();  // Calling the function to retrieve the trending wallpapers when the screen is initialized.
   }
 
   @override
@@ -58,26 +57,28 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: isLoading
           ? Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(),  // Displaying a loading indicator while the data is being loaded.
             )
           : SingleChildScrollView(
               child: Column(
                 children: [
                   Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: SearchBar()),
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: SearchBar(),  // Displaying the search bar widget.
+                  ),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 20),
                     child: SizedBox(
                       height: 50,
                       width: MediaQuery.of(context).size.width,
                       child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: CatModList.length,
-                          itemBuilder: ((context, index) => CatBlock(
-                                categoryImgSrc: CatModList[index].catImgUrl,
-                                categoryName: CatModList[index].catName,
-                              ))),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: CatModList.length,
+                        itemBuilder: ((context, index) => CatBlock(
+                          categoryImgSrc: CatModList[index].catImgUrl,
+                          categoryName: CatModList[index].catName,
+                        )),
+                      ),
                     ),
                   ),
                   Container(
@@ -86,52 +87,58 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: RefreshIndicator(
                       onRefresh: () async {
                         Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HomeScreen()));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
                       },
                       child: GridView.builder(
-                          physics: BouncingScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  mainAxisExtent: 400,
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 13,
-                                  mainAxisSpacing: 10),
-                          itemCount: trendingWallList.length,
-                          itemBuilder: ((context, index) => GridTile(
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => FullScreen(
-                                                imgUrl: trendingWallList[index]
-                                                    .imgSrc)));
-                                  },
-                                  child: Hero(
-                                    tag: trendingWallList[index].imgSrc,
-                                    child: Container(
-                                      height: 800,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                          color: Colors.blue,
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: Image.network(
-                                            height: 800,
-                                            width: 50,
-                                            fit: BoxFit.cover,
-                                            trendingWallList[index].imgSrc),
-                                      ),
-                                    ),
+                        physics: BouncingScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisExtent: 400,
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 13,
+                          mainAxisSpacing: 10,
+                        ),
+                        itemCount: trendingWallList.length,
+                        itemBuilder: ((context, index) => GridTile(
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FullScreen(
+                                    imgUrl: trendingWallList[index].imgSrc,
                                   ),
                                 ),
-                              ))),
+                              );
+                            },
+                            child: Hero(
+                              tag: trendingWallList[index].imgSrc,
+                              child: Container(
+                                height: 800,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.network(
+                                    height: 800,
+                                    width: 50,
+                                    fit: BoxFit.cover,
+                                    trendingWallList[index].imgSrc,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )),
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
